@@ -2,23 +2,15 @@ import { betterFetch } from "@better-fetch/fetch";
 import type { OAuthProvider, ProviderOptions } from "../oauth2";
 import { validateAuthorizationCode } from "../oauth2";
 
-export interface RobloxProfile extends Record<string, any> {
-	/** the user's id */
-	id: number;
-	/** the user's name */
-	name: string;
-	/** the user's display name */
-	displayName: string;
-	/** the user's description/bio */
-	description: string;
-	/** whether the user is verified */
-	hasVerifiedBadge: boolean;
-	/** when the user created their account */
-	created: string;
-	/** whether the user has premium membership */
-	isPremium: boolean;
-	/** the user's profile image URL */
-	imageUrl: string;
+export interface RobloxProfile {
+	sub: string;           // OpenID Connect user identifier
+	name: string;          // Username
+	nickname: string;      // Display name
+	preferred_username?: string;
+	profile: string;       // Profile URL
+	picture: string;       // Avatar URL
+	created_at: string;    // Account creation date
+	premium: boolean;      // Premium status
 }
 
 export interface RobloxOptions extends ProviderOptions<RobloxProfile> {}
@@ -54,22 +46,23 @@ export const roblox = (options: RobloxOptions) => {
 				{
 					headers: {
 						authorization: `Bearer ${token.accessToken}`,
+						accept: "application/json",
 					},
 				},
 			);
 
-			if (error) {
+			if (error || !profile) {
 				return null;
 			}
 
 			const userMap = await options.mapProfileToUser?.(profile);
 			return {
 				user: {
-					id: profile.id.toString(),
-					name: profile.name,
-					email: null, // Roblox doesn't provide email
+					id: profile.sub,
+					name: profile.preferred_username || profile.name,
+					email: null,
 					emailVerified: false,
-					image: profile.imageUrl,
+					image: profile.picture,
 					...userMap,
 				},
 				data: profile,

@@ -107,3 +107,9 @@ export type ProviderOptions<Profile extends Record<string, any> = any> = {
 				[key: string]: any;
 		  }>;
 };
+
+export interface ValidateAuthorizationCodeParams {
+	code: string;
+	redirectURI: string;
+	codeVerifier?: string;
+}

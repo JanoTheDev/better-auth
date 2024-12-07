@@ -11,6 +11,7 @@ import { twitter } from "./twitter";
 import { dropbox } from "./dropbox";
 import { linkedin } from "./linkedin";
 import { gitlab } from "./gitlab";
+import { roblox } from "./roblox";
 
 export const socialProviders = {
 	apple,
@@ -25,6 +26,7 @@ export const socialProviders = {
 	dropbox,
 	linkedin,
 	gitlab,
+	roblox
 };
 
 export const socialProviderList = Object.keys(socialProviders) as [
@@ -54,3 +56,4 @@ export * from "./twitter";
 export * from "./dropbox";
 export * from "./linkedin";
 export * from "./gitlab";
+export * from "./roblox";

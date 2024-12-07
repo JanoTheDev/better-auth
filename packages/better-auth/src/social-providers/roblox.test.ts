@@ -32,14 +32,14 @@ describe("roblox provider", () => {
 
 	it("should get user info correctly", async () => {
 		const mockProfile = {
-			id: 123456,
+			sub: "123456",
 			name: "TestUser",
-			displayName: "Test User",
-			description: "Test bio",
-			hasVerifiedBadge: true,
-			created: "2020-01-01",
-			isPremium: true,
-			imageUrl: "https://example.com/image.jpg",
+			nickname: "Test User",
+			preferred_username: "TestUser123",
+			profile: "https://www.roblox.com/users/123456/profile",
+			picture: "https://example.com/image.jpg",
+			created_at: "2020-01-01",
+			premium: true
 		};
 
 		vi.mocked(betterFetch).mockResolvedValueOnce({
@@ -54,7 +54,7 @@ describe("roblox provider", () => {
 		expect(result).toEqual({
 			user: {
 				id: "123456",
-				name: "TestUser",
+				name: "TestUser123",
 				email: null,
 				emailVerified: false,
 				image: "https://example.com/image.jpg",
@@ -67,9 +67,33 @@ describe("roblox provider", () => {
 			{
 				headers: {
 					authorization: "Bearer test-token",
+					accept: "application/json",
 				},
 			}
 		);
+	});
+
+	it("should fallback to name when preferred_username is not available", async () => {
+		const mockProfile = {
+			sub: "123456",
+			name: "TestUser",
+			nickname: "Test User",
+			profile: "https://www.roblox.com/users/123456/profile",
+			picture: "https://example.com/image.jpg",
+			created_at: "2020-01-01",
+			premium: true
+		};
+
+		vi.mocked(betterFetch).mockResolvedValueOnce({
+			data: mockProfile,
+			error: null,
+		});
+
+		const result = await provider.getUserInfo({
+			accessToken: "test-token",
+		});
+
+		expect(result?.user.name).toBe("TestUser");
 	});
 
 	it("should return null when user info fetch fails", async () => {
